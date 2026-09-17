@@ -392,13 +392,10 @@ header {
 
 /* Contact Page Canvas Container matching target image spec */
 #contact {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
+  width: calc(100% + 6rem);
+  margin-left: -3rem;
+  margin-right: -3rem;
   position: relative;
-  left: 50%;
-  right: 50%;
-  transform: translateX(-50%);
 }
 
 .contact-section-container {
@@ -406,7 +403,7 @@ header {
   width: 100%;
   border-radius: 0;
   overflow: hidden;
-  margin: 3rem 0;
+  margin: 3rem 0 0 0;
   border: none;
   box-shadow: none;
   background: url('/contact.png') no-repeat center center / cover;
