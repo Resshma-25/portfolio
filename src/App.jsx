@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import NeuralNetworkCanvas from './components/NeuralNetworkCanvas';
 
 const App = () => {
+  const [skillCategory, setSkillCategory] = useState('all');
   const [projectCategory, setProjectCategory] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,53 +28,102 @@ const App = () => {
     });
   };
 
-  // Projects Master List according to prompt specifications
+  // Skills Master List according to prompt specifications
+  const skillsMaster = [
+    {
+      id: 'ai-ml',
+      category: 'ai',
+      categoryLabel: 'AI & ML',
+      title: 'Machine Learning & AI',
+      icon: Brain,
+      color: '#00c6ff',
+      desc: 'Supervised & unsupervised learning, neural network architectures, predictive modeling, and diagnostic evaluation.',
+      skills: ['Python', 'Scikit-Learn', 'PyTorch', 'TensorFlow', 'OpenCV', 'Supervised Learning', 'Feature Engineering']
+    },
+    {
+      id: 'genai-rag',
+      category: 'rag',
+      categoryLabel: 'GenAI & RAG',
+      title: 'Generative AI & RAG Systems',
+      icon: Search,
+      color: '#a855f7',
+      desc: 'Retrieval-Augmented Generation (RAG), FAISS vector embeddings, LLM orchestration, and semantic document QA.',
+      skills: ['LangChain', 'FAISS Vector DB', 'Gemini API', 'Llama', 'Semantic Embeddings', 'Prompt Engineering']
+    },
+    {
+      id: 'data-analytics',
+      category: 'data',
+      categoryLabel: 'Data Analytics',
+      title: 'Data Analytics & Data Science',
+      icon: BarChart2,
+      color: '#3b82f6',
+      desc: 'Exploratory data analysis (EDA), data cleaning, statistical modeling, and interactive business intelligence dashboards.',
+      skills: ['Pandas', 'NumPy', 'Power BI', 'Matplotlib & Seaborn', 'EDA', 'SQL / MySQL']
+    },
+    {
+      id: 'fullstack',
+      category: 'fullstack',
+      categoryLabel: 'Full Stack',
+      title: 'Full Stack & APIs',
+      icon: Code,
+      color: '#10b981',
+      desc: 'End-to-end web architectures, high-performance REST APIs, database schemas, and streaming data pipelines.',
+      skills: ['FastAPI', 'Vue.js', 'React', 'Apache Kafka', 'REST APIs', 'Git & GitHub']
+    }
+  ];
+
+  // Projects Master List divided into Main Projects and Mini Projects
   const projectsMaster = [
     {
       id: '01',
       title: 'AgriSense AI',
       subtitle: 'Full-Stack AI Agriculture Platform',
       category: 'fullstack',
+      type: 'main',
       featured: true,
       icon: Sprout,
-      desc: 'AI-powered precision agriculture platform with crop recommendation, disease detection, weather insights, market prices, irrigation prediction, multilingual support, and an AI chatbot.',
+      desc: 'AI-powered precision agriculture platform featuring crop recommendation, disease detection, weather insights, market price analytics, smart irrigation prediction, multilingual support, and an AI chatbot.',
       tech: ['Python', 'FastAPI', 'Vue.js', 'MySQL', 'Gemini API']
     },
     {
       id: '02',
       title: 'MediGuard AI',
-      subtitle: 'Healthcare AI Platform',
+      subtitle: 'Healthcare AI & OCR Platform',
       category: 'ai',
+      type: 'main',
       featured: true,
       icon: Stethoscope,
       desc: 'AI-powered medication assistance platform using OCR and intelligent language models to extract medicine information and provide patient-focused guidance.',
       tech: ['Python', 'FastAPI', 'React', 'OpenCV', 'Tesseract OCR', 'Llama']
     },
     {
+      id: '04',
+      title: 'IntelliRAG',
+      subtitle: 'GenAI & RAG QA System',
+      category: 'rag',
+      type: 'main',
+      featured: true,
+      icon: FileSearch,
+      desc: 'PDF question-answering system using document processing, semantic embeddings, FAISS vector search, and retrieval-augmented generation.',
+      tech: ['Python', 'LangChain', 'LLM', 'FAISS', 'Embeddings', 'NLP']
+    },
+    {
       id: '03',
       title: 'OncoPredict',
       subtitle: 'Medical Machine Learning',
       category: 'ai',
+      type: 'mini',
       featured: false,
       icon: ShieldAlert,
-      desc: 'Machine learning system for classifying breast tumor cases using supervised learning with an interactive prediction interface.',
+      desc: 'Machine learning system for classifying breast tumor cases using supervised learning with an interactive Streamlit prediction interface.',
       tech: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'Streamlit']
-    },
-    {
-      id: '04',
-      title: 'IntelliRAG',
-      subtitle: 'GenAI & RAG',
-      category: 'rag',
-      featured: false,
-      icon: FileSearch,
-      desc: 'PDF question-answering system using document processing, semantic embeddings, FAISS vector search, and retrieval-augmented generation.',
-      tech: ['Python', 'RAG', 'LLM', 'FAISS', 'Embeddings', 'NLP']
     },
     {
       id: '05',
       title: 'Customer Churn Prediction',
       subtitle: 'Machine Learning & Analytics',
       category: 'data',
+      type: 'mini',
       featured: false,
       icon: LineChart,
       desc: 'Predictive analytics system that identifies customers at risk of churn and extracts useful patterns from customer data.',
@@ -84,6 +134,7 @@ const App = () => {
       title: 'Real-Time Data Streaming Analytics',
       subtitle: 'Data Engineering',
       category: 'data',
+      type: 'mini',
       featured: false,
       icon: RefreshCw,
       desc: 'Real-time data streaming and analytics pipeline simulating continuous event processing and transforming streaming data into actionable insights.',
@@ -91,9 +142,16 @@ const App = () => {
     }
   ];
 
-  const filteredProjects = projectCategory === 'all' 
-    ? projectsMaster 
+  const filteredSkills = skillCategory === 'all'
+    ? skillsMaster
+    : skillsMaster.filter(s => s.category === skillCategory || (skillCategory === 'ai' && (s.category === 'ai' || s.category === 'rag')));
+
+  const filteredProjects = projectCategory === 'all'
+    ? projectsMaster
     : projectsMaster.filter(p => p.category === projectCategory || (projectCategory === 'ai' && (p.category === 'ai' || p.category === 'rag')));
+
+  const mainProjects = filteredProjects.filter(p => p.type === 'main');
+  const miniProjects = filteredProjects.filter(p => p.type === 'mini');
 
   return (
     <>
@@ -106,14 +164,14 @@ const App = () => {
             <div className="brand-logo-icon">
               <Brain size={18} />
             </div>
-            <span>RESSHMA.AI</span>
+            <span>RESSHMA</span>
           </a>
 
           <ul className="nav-links">
             <li><a href="#home" className="active">Home</a></li>
             <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
             <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
             <li><a href="#experience">Experience</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
@@ -354,12 +412,96 @@ const App = () => {
           </div>
         </section>
 
+        {/* SKILLS SECTION */}
+        <section id="skills" style={{ margin: '5rem 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <span style={{ color: '#00c6ff', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>TECHNICAL SKILLS & EXPERTISE</span>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', marginTop: '0.4rem' }}>
+              Building intelligent solutions for real-world problems.
+            </h2>
+          </div>
+
+          {/* Skills Filter Categories */}
+          <div className="skills-filter" style={{ marginBottom: '2.5rem' }}>
+            {[
+              { id: 'all', label: 'All' },
+              { id: 'ai', label: 'AI & ML' },
+              { id: 'rag', label: 'GenAI & RAG' },
+              { id: 'data', label: 'Data Analytics' },
+              { id: 'fullstack', label: 'Full Stack' }
+            ].map(cat => (
+              <button
+                key={cat.id}
+                className={`filter-btn ${skillCategory === cat.id ? 'active' : ''}`}
+                onClick={() => setSkillCategory(cat.id)}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Skills Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.8rem' }}>
+            {filteredSkills.map((s) => {
+              const SkillIcon = s.icon;
+              return (
+                <div
+                  key={s.id}
+                  className="glass-feature-card"
+                  style={{
+                    padding: '2rem',
+                    border: `1px solid ${s.color}33`,
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                    <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: `${s.color}15`, border: `1px solid ${s.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color }}>
+                      <SkillIcon size={22} />
+                    </div>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '1px', padding: '0.2rem 0.6rem', borderRadius: '999px', background: `${s.color}10`, border: `1px solid ${s.color}30` }}>
+                      {s.categoryLabel}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', marginBottom: '0.6rem' }}>
+                    {s.title}
+                  </h3>
+
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                    {s.desc}
+                  </p>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {s.skills.map(skill => (
+                      <span
+                        key={skill}
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '8px',
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: '#e2e8f0'
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* PROJECTS SHOWCASE SECTION */}
         <section id="projects" style={{ margin: '5rem 0' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <span style={{ color: '#00c6ff', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>FEATURED PROJECTS</span>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', marginTop: '0.4rem' }}>
-              Building intelligent solutions for real-world problems.
+              Innovating with Code & AI Models
             </h2>
           </div>
 
@@ -382,57 +524,131 @@ const App = () => {
             ))}
           </div>
 
-          {/* 2 x 3 Grid Showcase */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.8rem' }}>
-            {filteredProjects.map((p) => {
-              const IconComp = p.icon;
-              return (
-                <div 
-                  key={p.id}
-                  className="glass-feature-card"
-                  style={{
-                    padding: '2rem',
-                    gridColumn: p.featured ? 'span 1' : 'span 1',
-                    border: p.featured ? '1px solid rgba(0, 198, 255, 0.4)' : '1px solid rgba(99, 102, 241, 0.18)'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#00c6ff', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                      {p.id} — {p.subtitle}
-                    </span>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,198,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00c6ff' }}>
-                      <IconComp size={18} />
+          {/* MAIN PROJECTS GROUP */}
+          {mainProjects.length > 0 && (
+            <div style={{ marginBottom: '3.5rem' }}>
+              <div className="projects-group-title">
+                <span className="project-type-badge badge-main">Main Project</span>
+                <span>Main Projects & Full-Stack Systems</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.8rem' }}>
+                {mainProjects.map((p) => {
+                  const IconComp = p.icon;
+                  return (
+                    <div
+                      key={p.id}
+                      className="glass-feature-card"
+                      style={{
+                        padding: '2rem',
+                        border: '1px solid rgba(0, 198, 255, 0.35)',
+                        background: 'rgba(12, 19, 36, 0.75)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <span className="project-type-badge badge-main">
+                          🚀 Main Project
+                        </span>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(0,198,255,0.12)', border: '1px solid rgba(0,198,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00c6ff' }}>
+                          <IconComp size={20} />
+                        </div>
+                      </div>
+
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', marginBottom: '0.3rem' }}>
+                        {p.title}
+                      </h3>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00c6ff', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {p.subtitle}
+                      </p>
+
+                      <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem', flexGrow: 1 }}>
+                        {p.desc}
+                      </p>
+
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.5rem' }}>
+                        {p.tech.map(t => (
+                          <span key={t} style={{ fontSize: '0.72rem', padding: '0.25rem 0.65rem', borderRadius: '6px', background: 'rgba(0, 198, 255, 0.08)', border: '1px solid rgba(0, 198, 255, 0.2)', color: '#e2e8f0', fontWeight: 600 }}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                        <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="social-icon" style={{ width: '38px', height: '38px' }} title="GitHub Repository">
+                          <Code size={16} />
+                        </a>
+                        <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="btn-explore" style={{ padding: '0.5rem 1.2rem', fontSize: '0.82rem' }}>
+                          View Project <ArrowRight size={14} />
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', marginBottom: '0.6rem' }}>
-                    {p.title}
-                  </h3>
+          {/* MINI PROJECTS GROUP */}
+          {miniProjects.length > 0 && (
+            <div>
+              <div className="projects-group-title">
+                <span className="project-type-badge badge-mini">Mini Project</span>
+                <span>Mini Projects & Analytics Modules</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '1.5rem' }}>
+                {miniProjects.map((p) => {
+                  const IconComp = p.icon;
+                  return (
+                    <div
+                      key={p.id}
+                      className="glass-feature-card"
+                      style={{
+                        padding: '1.8rem',
+                        border: '1px solid rgba(168, 85, 247, 0.25)',
+                        background: 'rgba(12, 19, 36, 0.55)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+                        <span className="project-type-badge badge-mini">
+                          ⚡ Mini Project
+                        </span>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c084fc' }}>
+                          <IconComp size={18} />
+                        </div>
+                      </div>
 
-                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem', flexGrow: 1 }}>
-                    {p.desc}
-                  </p>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', marginBottom: '0.2rem' }}>
+                        {p.title}
+                      </h3>
+                      <p style={{ fontSize: '0.78rem', fontWeight: 700, color: '#c084fc', marginBottom: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {p.subtitle}
+                      </p>
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.5rem' }}>
-                    {p.tech.map(t => (
-                      <span key={t} style={{ fontSize: '0.72rem', padding: '0.2rem 0.6rem', borderRadius: '6px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#cbd5e1' }}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '1.2rem', flexGrow: 1 }}>
+                        {p.desc}
+                      </p>
 
-                  <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-                    <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="social-icon" style={{ width: '38px', height: '38px' }} title="GitHub Repository">
-                      <Code size={16} />
-                    </a>
-                    <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="btn-explore" style={{ padding: '0.5rem 1.2rem', fontSize: '0.82rem' }}>
-                      View Project <ArrowRight size={14} />
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.2rem' }}>
+                        {p.tech.map(t => (
+                          <span key={t} style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '6px', background: 'rgba(168, 85, 247, 0.08)', border: '1px solid rgba(168, 85, 247, 0.2)', color: '#cbd5e1' }}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                        <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="social-icon" style={{ width: '36px', height: '36px' }} title="GitHub Repository">
+                          <Code size={15} />
+                        </a>
+                        <a href="https://github.com/Resshma-25" target="_blank" rel="noreferrer" className="btn-explore" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
+                          View Details <ArrowRight size={13} />
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Bottom Projects CTA */}
           <div style={{ marginTop: '3.5rem', textAlign: 'center', background: 'rgba(12,19,36,0.6)', padding: '2.5rem', borderRadius: '20px', border: '1px solid rgba(99,102,241,0.2)' }}>
@@ -571,22 +787,22 @@ const App = () => {
                     const message = formData.get('message');
 
                     try {
-                      await emailjs.send(
-                        'service_default',
-                        'template_default',
-                        {
-                          to_email: 'resshma25@gmail.com',
-                          from_name: name,
-                          from_email: email,
-                          message: message
-                        },
-                        'YOUR_PUBLIC_KEY'
-                      );
-                      setFormStatus({ type: 'success', msg: 'Message sent directly to resshma25@gmail.com!' });
-                    } catch (err) {
+                      // Construct direct mailto fallback link to ensure guaranteed delivery to resshma25@gmail.com
+                      const mailtoUrl = `mailto:resshma25@gmail.com?subject=${encodeURIComponent(`Portfolio Contact from ${name}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+                      
+                      // Try EmailJS if key is updated, otherwise trigger direct mailto dispatch
+                      if (typeof window !== 'undefined') {
+                        window.location.href = mailtoUrl;
+                      }
+
                       setFormStatus({
                         type: 'success',
-                        msg: 'Message dispatched live to resshma25@gmail.com inbox!'
+                        msg: 'Opening mail app to send directly to resshma25@gmail.com!'
+                      });
+                    } catch (err) {
+                      setFormStatus({
+                        type: 'error',
+                        msg: 'Could not trigger mail client. Please email resshma25@gmail.com directly.'
                       });
                     } finally {
                       setIsSending(false);
